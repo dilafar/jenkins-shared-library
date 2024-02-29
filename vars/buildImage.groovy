@@ -1,7 +1,7 @@
 #!usr/bin/env groovy
 
 def call(){
-    echo"build docker image..."
+    echo "building the branch ${BRANCH_NAME}..."
     withCredentials([
             usernamePassword(credentialsId:'docker-credentials',usernameVariable:'USER',passwordVariable:'PASS')
     ]){
