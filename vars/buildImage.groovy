@@ -1,6 +1,6 @@
 #!usr/bin/env groovy
 
-def call(string imageName){
+def call(String imageName){
     withCredentials([
             usernamePassword(credentialsId:'docker-credentials',usernameVariable:'USER',passwordVariable:'PASS')
     ]){
