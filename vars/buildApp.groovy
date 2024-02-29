@@ -2,5 +2,5 @@
 
 def call(){
     echo "build version ${NEW_VERSION}..."
-    sh "mvn install"
+    sh "mvn clean package"
 }
