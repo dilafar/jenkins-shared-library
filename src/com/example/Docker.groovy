@@ -8,18 +8,25 @@ class Docker implements Serializable{
         this.script = script
     }
 
-    def buildDockerImage(String image){
-        script.sh "docker build -t ${image} ."
+    def buildDockerImage(String image,String imageVersion){
+        script.sh "docker build -t ${image}-v${imageVersion} ."
     }
     def dockerLogin(){
         script.withCredentials([
-                script.usernamePassword(credentialsId:'docker-credentials',usernameVariable:'USER',passwordVariable:'PASS')
+                script.usernamePassword(credentialsId: 'docker', passwordVariable: 'PASS', usernameVariable: 'USER')
         ]){
             script.sh "echo ${script.PASS} | docker login -u ${script.USER} --password-stdin"
 
         }
     }
-    def pushDockerImage(String image){
-        script.sh "docker push ${image}"
+    def pushDockerImage(String image,String imageVersion){
+        script.sh "docker push ${image}-v${imageVersion}"
+    }
+
+    def signImage(String image,String imageVersion , String COSIGN_PRIVATE_KEY,String COSIGN_PUBLIC_KEY){
+        def IMAGE_DIGEST = script.sh(script: "docker inspect --format='{{index .RepoDigests 0}}' ${image}:v${imageVersion}", returnStdout: true).trim()
+        script.echo "Image Digest: ${IMAGE_DIGEST}"
+        script.sh "echo 'y' | cosign sign --key ${COSIGN_PRIVATE_KEY} ${IMAGE_DIGEST}"
+        script.sh "cosign verify --key ${COSIGN_PUBLIC_KEY} ${IMAGE_DIGEST}"
     }
 }
