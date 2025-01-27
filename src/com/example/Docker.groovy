@@ -40,7 +40,7 @@ class Docker implements Serializable{
     }
 
     def signCloudImage(String image,String imageVersion , String COSIGN_PRIVATE_KEY,String COSIGN_PUBLIC_KEY){
-        def IMAGE_DIGEST = script.sh(script: "docker inspect --format='{{index .RepoDigests 0}}' ${image}-v${imageVersion}", returnStdout: true).trim()
+        def IMAGE_DIGEST = script.sh(script: "docker inspect --format='{{index .RepoDigests 0}}' ${image}:${imageVersion}", returnStdout: true).trim()
         script.echo "Image Digest: ${IMAGE_DIGEST}"
         script.sh "export COSIGN_TLOG_UPLOAD=false"
         script.sh "cosign sign --key ${COSIGN_PRIVATE_KEY} ${IMAGE_DIGEST}"
