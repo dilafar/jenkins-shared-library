@@ -8,24 +8,21 @@ class Repository implements Serializable{
     }
 
     def uploadArtifactToNexus(String nexusUrl, String groupId, String artifactId, String version, String repository, String credentialsId, String artifactFile, String artifactType) {
-        def uploadCommand = """
-        nexusArtifactUploader(
-            nexusVersion: 'nexus3',
-            protocol: 'http',
-            nexusUrl: '${nexusUrl}',
-            groupId: '${groupId}',
-            version: '${version}',
-            repository: '${repository}',
-            credentialsId: '${credentialsId}',
-            artifacts: [
-                [artifactId: '${artifactId}',
-                classifier: '',
-                file: '${artifactFile}',
-                type: '${artifactType}']
-            ]
-        )
-    """
         script.echo "Uploading artifact to Nexus: ${artifactFile}"
-        script.sh(script: uploadCommand)
+        script.nexusArtifactUploader(
+                nexusVersion: 'nexus3',
+                protocol: 'http',
+                nexusUrl: nexusUrl,
+                groupId: groupId,
+                version: version,
+                repository: repository,
+                credentialsId: credentialsId,
+                artifacts: [
+                        [artifactId: artifactId,
+                         classifier: '',
+                         file: artifactFile,
+                         type: artifactType]
+                ]
+        )
     }
 }
