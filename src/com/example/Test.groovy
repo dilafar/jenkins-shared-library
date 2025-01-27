@@ -15,18 +15,25 @@ class Test implements Serializable{
         script.sh "mvn checkstyle:checkstyle"
     }
 
-    def sonarAnalysis(String scannerHome) {
-        script.withSonarQubeEnv('sonar') {
-            script.sh """${scannerHome}/bin/sonar-scanner \
-            -Dsonar.projectKey=banking \
-            -Dsonar.projectName=banking-microservice-repo \
-            -Dsonar.projectVersion=1.0 \
-            -Dsonar.sources=src/ \
-            -Dsonar.java.binaries=target/classes \
-            -Dsonar.junit.reportsPath=target/surefire-reports/ \
-            -Dsonar.jacoco.reportPaths=target/jacoco.exec \
-            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+    def runSonarScanner(String sonarEnv, String scannerHome, String projectKey, String projectName, String projectVersion, String sources, String hostUrl, String javaBinaries, String jacocoReportsPath, String junitReportsPath, String coverageXmlReportPath, String dependencyCheckJsonPath, String dependencyCheckHtmlPath, String checkstyleReportPath) {
+        script.withSonarQubeEnv(sonarEnv) {
+            def sonarCommand = """
+            ${scannerHome}/bin/sonar-scanner \\
+                -Dsonar.projectKey=${projectKey} \\
+                -Dsonar.projectName=${projectName} \\
+                -Dsonar.projectVersion=${projectVersion} \\
+                -Dsonar.sources=${sources} \\
+                -Dsonar.host.url=${hostUrl} \\
+                -Dsonar.java.binaries=${javaBinaries} \\
+                -Dsonar.jacoco.reportsPath=${jacocoReportsPath} \\
+                -Dsonar.junit.reportsPath=${junitReportsPath} \\
+                -Dsonar.coverage.jacoco.xmlReportPaths=${coverageXmlReportPath} \\
+                -Dsonar.dependencyCheck.jsonReportPath=${dependencyCheckJsonPath} \\
+                -Dsonar.dependencyCheck.htmlReportPath=${dependencyCheckHtmlPath} \\
+                -Dsonar.java.checkstyle.reportPaths=${checkstyleReportPath}
         """
+            script.echo "Running SonarQube analysis for project: ${projectName}"
+            script.sh(script: sonarCommand)
         }
     }
 
