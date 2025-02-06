@@ -34,6 +34,15 @@ class Docker implements Serializable{
         }
     }
 
+    def dockerLoginPrivateCloudAzure(String repoUrl){
+        script.withCredentials([
+                script.usernamePassword(credentialsId: 'ecr-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')
+        ]){
+            script.sh "echo ${script.PASS} | docker login -u ${script.USER} --password-stdin ${repoUrl}"
+
+        }
+    }
+
     def pushDockerImage(String image,String imageVersion){
         script.sh "docker push ${image}-v${imageVersion}"
     }
